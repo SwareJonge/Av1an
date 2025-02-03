@@ -593,6 +593,7 @@ impl Encoder {
     match &self {
       Self::aom => inplace_vec![
         "aomenc",
+        "-",
         "--passes=1",
         format!("--threads={threads}"),
         "--tile-columns=2",
@@ -622,6 +623,7 @@ impl Encoder {
       ],
       Self::rav1e => inplace_vec![
         "rav1e",
+        "-",
         "-y",
         "-s",
         "10",
@@ -638,6 +640,7 @@ impl Encoder {
       ],
       Self::vpx => inplace_vec![
         "vpxenc",
+        "-",
         "-b",
         "10",
         "--profile=2",
@@ -756,6 +759,8 @@ impl Encoder {
         "0",
         "--no-progress",
         "--y4m",
+        "--input",
+        "-",
         "--frame-threads",
         cmp::min(threads, 16).to_string(),
         "--preset",
@@ -769,10 +774,11 @@ impl Encoder {
   /// Returns command used for target quality probing (slow, correctness focused version)
   pub fn construct_target_quality_command_probe_slow(self, q: usize) -> Vec<Cow<'static, str>> {
     match &self {
-      Self::aom => inplace_vec!["aomenc", "--passes=1", format!("--cq-level={q}")],
-      Self::rav1e => inplace_vec!["rav1e", "-y", "--quantizer", q.to_string()],
+      Self::aom => inplace_vec!["aomenc", "-", "--passes=1", format!("--cq-level={q}")],
+      Self::rav1e => inplace_vec!["rav1e", "-", "-y", "--quantizer", q.to_string()],
       Self::vpx => inplace_vec![
         "vpxenc",
+        "-",
         "--passes=1",
         "--pass=1",
         "--codec=vp9",
@@ -797,6 +803,8 @@ impl Encoder {
         "0",
         "--no-progress",
         "--y4m",
+        "--input",
+        "-",
         "--crf",
         q.to_string(),
       ],
